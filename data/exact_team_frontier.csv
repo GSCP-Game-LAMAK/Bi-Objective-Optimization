@@ -1,0 +1,16 @@
+solution,five_year_CO2_saved_t,five_year_delta_EBIT_EUR,final_year_delta_EBIT_EUR,tokens,energy,selected_actions
+1,3062.477,-23453034.32,-4651229.4,10,Trigeneration Large — Plant B,Beta1@Year0 | Gamma1@Year0 | Lactose1@Year0 | Pack1@Year2 | TrigenerationLargeB@Year1 | Verona::CenterHVO@Year2 | Verona::North WestElectric@Year3 | Verona::SouthHVO@Year2
+2,3046.714,-19425651.79,-4739063.68,10,PV Medium — Plant B,Beta1@Year1 | Gamma1@Year0 | Lactose1@Year1 | Pack1@Year1 | PVMediumB@Year0 | Verona::BHVO@Year3 | Verona::CenterHVO@Year2 | Verona::North WestElectric@Year2 | Verona::SouthHVO@Year2
+3,3033.111,-19228475.82,-4673930.6,10,PV Medium — Plant B,Beta1@Year1 | Gamma1@Year0 | Lactose1@Year1 | Pack1@Year1 | PVMediumB@Year0 | Verona::CenterHVO@Year2 | Verona::North WestHVO@Year3 | Verona::SouthHVO@Year2 | ST257@Year2
+4,2993.658,-15275954.64,-4739063.68,10,PV Medium — Plant B,Beta1@Year2 | Gamma1@Year0 | Lactose1@Year1 | Pack1@Year1 | PVMediumB@Year0 | Verona::BHVO@Year3 | Verona::CenterHVO@Year2 | Verona::North WestElectric@Year2 | Verona::SouthHVO@Year1
+5,2969.713,-15009217.16,-4611793.84,10,PV Medium — Plant B,Beta1@Year2 | Gamma1@Year0 | Lactose1@Year1 | Pack1@Year1 | PVMediumB@Year0 | Verona::CenterHVO@Year2 | Verona::SouthHVO@Year1 | ST250@Year3
+6,2925.677,-11106421.08,-4739063.68,10,PV Medium — Plant B,Beta1@Year3 | Gamma1@Year0 | Lactose1@Year1 | Pack1@Year1 | PVMediumB@Year0 | Verona::BHVO@Year2 | Verona::CenterHVO@Year2 | Verona::North WestElectric@Year2 | Verona::SouthHVO@Year1
+7,2898.909,-10724611.58,-4611793.84,10,PV Medium — Plant B,Beta1@Year3 | Gamma1@Year0 | Lactose1@Year1 | Pack1@Year1 | PVMediumB@Year0 | Verona::CenterHVO@Year2 | Verona::SouthHVO@Year1 | ST250@Year2
+8,2854.873,-6931239.51,-4739063.68,10,PV Medium — Plant B,Beta1@Year4 | Gamma1@Year0 | Lactose1@Year1 | Pack1@Year1 | PVMediumB@Year0 | Verona::BHVO@Year2 | Verona::CenterHVO@Year2 | Verona::North WestElectric@Year2 | Verona::SouthHVO@Year1
+9,2828.104,-6549430.01,-4611793.84,10,PV Medium — Plant B,Beta1@Year4 | Gamma1@Year0 | Lactose1@Year1 | Pack1@Year1 | PVMediumB@Year0 | Verona::CenterHVO@Year2 | Verona::SouthHVO@Year1 | ST250@Year2
+10,2785.589,-2905240.33,-638473.3,10,PV Medium — Plant B,Alpha1@Year3 | Gamma1@Year0 | Lactose1@Year1 | Pack1@Year1 | PVMediumB@Year0 | Verona::BHVO@Year2 | Verona::CenterHVO@Year2 | Verona::North WestElectric@Year2 | Verona::SouthHVO@Year1
+11,2761.934,-1699123.18,-481695.85,10,Trigeneration Large — Plant B,Gamma1@Year1 | Lactose1@Year1 | Pack1@Year1 | TrigenerationLargeB@Year0 | Verona::BHVO@Year3 | Verona::CenterHVO@Year2 | Verona::North WestElectric@Year2 | Verona::SouthHVO@Year2
+12,2720.242,-1297477.27,-354426.02,10,Trigeneration Large — Plant B,Gamma1@Year1 | Lactose1@Year1 | Pack1@Year1 | TrigenerationLargeB@Year0 | Verona::CenterHVO@Year2 | Verona::SouthHVO@Year3 | ST250@Year2
+13,2375.406,-242990.01,-274229.6,10,Trigeneration Large — Plant B,Gamma1@Year2 | Lactose1@Year2 | Pack1@Year2 | TrigenerationLargeB@Year0 | Verona::CenterHVO@Year3 | ST243@Year1
+14,2064.682,805219.3,-264853.23,10,Trigeneration Large — Plant B,Gamma1@Year4 | Lactose1@Year1 | Pack1@Year1 | TrigenerationLargeB@Year0 | Verona::North WestHVO@Year4 | ST243@Year2
+15,1459.088,1859807.9,407303.41,8,Trigeneration Large — Plant B,TrigenerationLargeB@Year0 | ST17@Year2 | ST243@Year1 | ST305@Year2

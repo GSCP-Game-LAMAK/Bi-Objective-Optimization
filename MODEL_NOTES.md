@@ -1,39 +1,25 @@
-# Model specification, provenance and review notes
+# Formulation, accounting and status (v3)
 
-## Objective functions
+This document is a companion to the interactive mathematical-model tab.
 
-- Carbon footprint: `min Σ_{t=0}^4 [4074 − Σ_a r_a · z_{a,t}]` t CO₂eq.
-- Profit: `max Σ_{t=0}^4 [EBIT_base − Σ_a c_a · z_{a,t} − Σ_a setup_a · x_{a,t}]`.
-- `x_{a,t} ∈ {0,1}` starts action `a` in year `t`; `z_{a,t} = Σ_{τ≤t} x_{a,τ}` keeps it active in following years.
-- `r_a` is annual reduction in tonnes (negative indicates an emissions increase); `c_a` is annual EBIT cost change (positive is worse), with team energy entries already net of depreciation.
-- The 50/50 score is an illustrative normalized ranking of observed Pareto solutions. The official scoring normalization has not been verified.
+Define `x[a,t] = 1` when action `a` starts in year `t∈{0,…,4}`; `z[a,t] = Σ_{τ≤t} x[a,τ]` denotes continuing activity. Workbook source actions have annual carbon saving `r[a]` (t/year), operating-cost delta `o[a]` (EUR/year), depreciation `d[a]` (EUR/year), setup expense `s[a]` (EUR one-off), capital investment `k[a]`, and tokens `q[a]`. Positive `o` increases cost.
 
-## Hard constraints (confirmed project description)
+Five-year objectives:
 
-1. `Σ_{a,t} token_a · x_{a,t} ≤ 10` (slide 19).
-2. `Σ_a token_a · x_{a,t} ≤ 3` for each year (slide 19).
-3. `Σ_t x_{a,t} ≤ 1` for each action.
-4. For energy actions `A_energy` across **both Plant A and Plant B**, `Σ_{a∈A_energy,t} x_{a,t} ≤ 1`. Project slide 32 describes selecting photovoltaic **or** trigeneration at **one** of the two factories. User explicitly confirmed a single energy plant.
-5. For distribution relocation, `x_{dc,t}=0` for `t≠0`, `Σ_{dc,t} x_{dc,t}≤1`, `token_dc=2`, `setup_dc=€90,000` (slide 26). The setup cost is modeled as an expense in Year 0; its exact EBIT capitalization treatment should be confirmed.
-6. The same North-West delivery activity cannot use both HVO and electric options.
-7. API Beta inventory Q alternatives (10/20/30%) are mutually exclusive.
+- Maximize avoided carbon: `R = Σ_a Σ_t (5-t) r[a] x[a,t]`.
+- Maximize incremental EBIT: `P = Σ_a Σ_t {-(5-t)(o[a]+d[a]) - s[a]} x[a,t]`.
 
-## Partial and unmodeled rules
+Annual reported emissions `4074 - Σ r[a]z[a,t]`; annual incremental EBIT `−Σ(o[a]+d[a])z[a,t] − Σ s[a]x[a,t]`. Capital expenditure is excluded from EBIT but included in cash flow. Baseline annual EBIT approximately EUR 31.2 million is from a rounded slide.
 
-- The PDF allows sourcing and packaging in tiers `≤33%`, `>33–66%`, and `>66%` with costs 1, 2, and 3 tokens respectively (slides 23–25). This group input contains **only the 33% tier** for each material and packaging; adding full tiers is a next step.
-- Inventory Q/R adjustments cost 1 token per 10% band and can change both parameters simultaneously at the same token charge (slide 29). Only the five submitted inventory alternatives are in this action register.
-- Last-mile electricity is allowed for areas bordering the DC macroregion (slide 30), a rule whose geographic adjacency must be checked when DC relocation is chosen. The optimizer conservatively blocks relocation with all Verona-based transportation estimates by default.
-- The slide 35 emission baseline is rounded (4,074 t/year). Quantitative effects are team estimates not official Digital Twin outputs.
-- OTIF is required for performance and affects actual sales/EBIT (slide 11), but the team has not supplied an OTIF response model. No official feasibility proof for service levels is possible yet.
-- The 5-year cash and EBIT functions are not interchangeable. A reduction in inventory working capital may not cause the same amount of EBIT improvement.
-- Naples is an allowed relocation city on slide 26 but absent from the user's final 25-row comparison, so its option is omitted pending numerical inputs.
+Core constraints:
 
-## UI fixes in v2
+- `Σ q[a]x[a,t] ≤ 10` overall, `Σ_a q[a]x[a,t] ≤ 3` per year.
+- `Σ_t x[a,t] ≤ 1` for each action; `Σ_{a∈G,t}x[a,t] ≤ 1` per exclusive action family.
+- All energy options belong to **one global energy family**.
+- DC relocation only in Year 0; at most one city; €90,000 one-off.
+- For transport alternatives tied to DC city `d`, selection requires `DC=d` (or Verona baseline) and the same fuel-route group cannot be selected twice.
+- Alternative DC-dependent cost and emissions are drawn from matching workbook transport rows, not added to the Verona baseline unconditionally.
 
-- The Inspect button (and every clickable Pareto point) navigates to the strategy details and scrolls the selected plan into view, then focuses the heading for keyboard users.
-- The entire energy portfolio is one exclusive choice; the previous two-site combination is no longer feasible.
-- DC relocation is always charged €90k once in Year 0.
+The exact reference uses SciPy/HiGHS MILP with linear bounds `P ≥ ε` and maximizes `R`. It samples 25 ε values between profit-only and carbon-only extreme solutions. This samples the frontier, not every efficient point. The interactive browser explores modified constraints using a bounded beam search, which cannot claim exact optimality.
 
-## Solver guarantee
-
-The browser algorithm is a **bounded multi-objective beam search**, producing an approximate non-dominated set among retained states. It is not a globally certified mixed-integer program; no exact optimality gap is claimed. Use the university simulator to validate shortlisted schedules.
+**Unverified drivers:** OTIF, stock CO₂, supplier-stock price valuation interactions, calibrated regional tonnes and solar self-consumption. The project permits progressive sourcing/packaging across periods; a single-tier-at-once model is an approximation, not an exact interpretation of staged token charging.
