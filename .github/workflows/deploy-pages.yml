@@ -1,4 +1,4 @@
-name: Test, solve and deploy LAMAK v4
+name: Test and deploy LAMAK v5
 
 on:
   push:
@@ -15,37 +15,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test-and-build:
+  verify-and-build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout source
-        uses: actions/checkout@v4
-      - name: Set up Node
-        uses: actions/setup-node@v4
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Validate JavaScript and workbook-backed data
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Install reproducible MILP dependencies
+        run: python -m pip install --disable-pip-version-check numpy scipy
+      - name: Regenerate certified source-backed MILP results
+        run: python scripts/solve_exact_v5.py
+      - name: Check syntax and all unit tests
         run: |
           node --check app.js
           node --check data/model.js
-          node --test tests/*.test.cjs
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
-      - name: Install exact MILP dependencies
-        run: python -m pip install --disable-pip-version-check numpy scipy
-      - name: Recompute team-25 epsilon-constraint MILP reference
-        run: python scripts/solve_exact.py
-      - name: Verify solver outputs and syntax
+          node --check data/exact_v5.js
+          node --test tests/v5.test.cjs
+      - name: Build static GitHub Pages site
         run: |
-          node --check data/exact_team.js
-          node --test tests/*.test.cjs
-      - name: Package static dashboard
-        run: |
-          mkdir -p _site
+          mkdir -p _site/data
           cp index.html app.js styles.css _site/
-          cp -R data _site/data
+          cp data/model.js data/workbook_model.json data/exact_v5.js data/exact_v5.json data/exact_v5_frontier.csv _site/data/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
@@ -53,12 +47,12 @@ jobs:
           path: _site
 
   deploy:
-    needs: test-and-build
+    needs: verify-and-build
     runs-on: ubuntu-latest
     environment:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy GitHub Pages
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

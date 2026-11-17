@@ -1,5 +1,5 @@
 """Extract source-backed values from Eco Chain workbook; intentionally NEVER reads Dashboard or Schedule."""
-import json, re, pathlib, math, sys
+import json, re, pathlib, math, sys, hashlib
 from artifact_tool import Blob,SpreadsheetFile
 ROOT=pathlib.Path(__file__).resolve().parent
 SOURCE=ROOT/'source'/'Eco_Chain_Reaction_Model_Updated.xlsx'
@@ -63,18 +63,19 @@ for area,rows in team.items():
 teamSet=set(sum(team.values(),[]))
 for a in actions:a['team']=a['id'] in teamSet
 metadata={
- 'title':'LAMAK updated-workbook optimization v4', 'sourceFile':SOURCE.name,
+ 'title':'LAMAK updated-workbook optimization v5', 'sourceFile':SOURCE.name,
+ 'sourceSha256':hashlib.sha256(SOURCE.read_bytes()).hexdigest(),
  'sourceIncludedSheets':list(RANGES),
  'sourceExcludedSheets':['Dashboard','Schedule','Audit','Sensitivity'],
  'baselineCO2':4074,'baselineEBIT':31200000,'tokenCap':10,'annualTokenCap':3,
- 'method':'updated workbook cached formula results from 9 source/calculation sheets; no preset portfolio or historical sensitivity snapshots',
+ 'method':'updated workbook cached formula results from 9 source/calculation sheets; exact core with staged packaging; no preset portfolio or historical sensitivity snapshots',
  'team25':team,
  'financialConvention':'opex excludes D&A; EBIT savings = -opex - depreciation - setup in implementation year',
  'energyMethod':'Average daily PV energy offsets mean site daily load, no credit for surplus; verified against Energy rows 6-17',
  'energyClarification':'The workbook labels one installation, daily average PV offset and heating factor interpretation as professor confirmed; this was not independently verified.',
  'stockUncertainty':'20% annual carrying rate and €0 fixed order cost are analyst assumptions, not case facts',
  'electricEligibility':'Based on the workbook Transport rows and its adjacency rules, not independently confirmed by professor',
- 'sourceControls':{'energyChoice':'at most one energy installation','DC':'at most one first-year relocation, €90,000 setup','supplier':'one alternative share tier per material','packaging':'one share tier','transport':'one fuel per route / geographical area','stock':'one policy per facility-product'},
+ 'sourceControls':{'energyChoice':'at most one energy installation','DC':'at most one first-year relocation, €90,000 setup','supplier':'one alternative share tier per material','packaging':'monotone staged 33/66/100 adoption with incremental token charges and setup once; source allows progressive implementation','transport':'one fuel per route / geographical area','stock':'one policy per facility-product'},
 }
 output={'metadata':metadata,'actions':actions,'source':source}
 path=ROOT/'data'/'workbook_model.json';path.parent.mkdir(exist_ok=True,parents=True)

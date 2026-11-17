@@ -6,3 +6,12 @@
 /* v2: make selected plan detail a reliable, focused inspect destination */
 #plan-heading{scroll-margin-top:36px;outline-offset:7px}
 #plan-heading:focus-visible{outline:2px solid #64eccb}
+/* v5: show cash and normalized score with the existing compact metric cards */
+.metrics{grid-template-columns:repeat(3,minmax(0,1fr))}
+.metric strong{font-size:clamp(19px,1.8vw,29px)}
+#model-anchors{margin:12px 0 0;color:#beded8;font-size:11px}
+#benchmark-compare{margin:16px 0 18px}
+.pareto-dot{cursor:pointer}
+.pareto-dot:hover{stroke:#fff;stroke-width:2.5px}
+@media(max-width:1050px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:520px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
