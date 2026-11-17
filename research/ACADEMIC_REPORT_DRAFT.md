@@ -6,7 +6,7 @@
 
 ## Abstract (draft; replace bracketed results after validation)
 
-This study examines the trade-off between financial and environmental performance in a five-year pharmaceutical supply-chain planning problem. A mathematical decision framework models changes in sourcing, network location, transport fuel, inventory management and factory energy systems. The framework considers annual carbon savings and incremental earnings before interest and taxes (EBIT), subject to a ten-token implementation budget, a three-token annual limit, technology exclusivity and location-dependent logistics eligibility. Baseline option parameters are derived from the provided case workbook's input and calculation sheets; pre-existing solution dashboards and schedules are excluded. We combine an exploratory browser-based multi-criteria search with a mixed-integer linear programming reference solved at sampled ε-constraint thresholds. Outcomes are evaluated using a Pareto trade-off visualization and sensitivity analysis for solar utilization, cost assumptions and service-level uncertainty. **[Insert validated case results and managerial conclusion after reviewing the final solver output.]**
+This study examines the trade-off between financial and environmental performance in a five-year pharmaceutical supply-chain planning problem. A mathematical decision framework models changes in sourcing, network location, transport fuel, inventory management and factory energy systems. The framework considers annual carbon savings and incremental earnings before interest and taxes (EBIT), subject to a ten-token implementation budget, a three-token annual limit, technology exclusivity and location-dependent logistics eligibility. Baseline option parameters are derived from the provided case workbook's input and calculation sheets; pre-existing solution dashboards and schedules are excluded. We combine an exploratory browser-based multi-criteria search with a mixed-integer linear programming reference solved at sampled ε-constraint thresholds. Outcomes are evaluated using a Pareto trade-off visualization and sensitivity analysis for effective PV utilization, cost assumptions and service-level uncertainty. **[Insert validated case results and managerial conclusion after reviewing the final solver output.]**
 
 ## 1. Introduction
 
@@ -16,9 +16,9 @@ This case considers a pharmaceutical manufacturer with two factories, a distribu
 
 ## 2. Data and provenance
 
-The supplied Excel workbook `Eco_Chain_Reaction_Model.xlsx` is used as the quantitative input. Only source and calculation sheets (`Inputs`, `Assumptions`, `Routing`, `Suppliers`, `DC Locations`, `Energy`, `Transport`, `Stock Policies`, `Actions`, `Sensitivity`) feed the model. Existing `Dashboard` and `Schedule` sheets were excluded from extraction and optimization to prevent solution leakage. A total of 516 action records and a 25-action team shortlist are maintained. The original course project supplies the official constraints and technologies.
+The supplied Excel workbook `Eco_Chain_Reaction_Model_Updated.xlsx` is used as the quantitative input. Only source and calculation sheets (`Inputs`, `Assumptions`, `Routing`, `Suppliers`, `DC Locations`, `Energy`, `Transport`, `Stock Policies`, `Actions`) feed the model. Existing `Dashboard`, `Schedule`, `Audit` and historically populated `Sensitivity` sheets were excluded from extraction and optimization to prevent solution leakage. A total of 516 action records and a 25-action team shortlist are maintained. The original course project supplies the official constraints and technologies.
 
-Several input categories remain estimates: shipment weights inferred from calibrated network costs, representative distances rather than full shipment data, 20% annual inventory holding rate with zero ordering fee, and a 12-hour sinusoidal solar-generation profile. These are explicitly distinguished from published case values. Stock-policy carbon and OTIF effects are not measured and must not be reported as zero impacts.
+Several input categories remain estimates: shipment weights inferred from calibrated network costs, representative distances rather than full shipment data, 20% annual inventory holding rate with zero ordering fee, and an average-daily PV-to-load matching rule with no surplus credit. These are explicitly distinguished from published case values. Stock-policy carbon and OTIF effects are not measured and must not be reported as zero impacts.
 
 ## 3. Formulation
 
@@ -36,7 +36,7 @@ A browser-accessible heuristic explores candidate five-year schedules and retain
 
 ## 5. Results and sensitivity (to complete)
 
-Place the reference MILP Pareto figure, implementation table, percentage CO₂ reduction, final-year EBIT change, yearly costs, capital expenditure and tokens here. Compare with the browser search. Run sensitivity cases: (a) solar self-consumption versus annual energy matching; (b) 10%, 20%, 30% holding rate; (c) freight factor variations; (d) exclude actions with unquantified service risk. **Avoid presenting hypothetical scenarios as official Digital Twin outcomes.**
+Current updated-workbook result: PV Large at Plant B saves 540.20 tCO₂/year and provides €356,090/year incremental EBIT benefit when installed at the beginning of the horizon. These figures are workbook scenarios, not verified Digital Twin outcomes. Place the reference MILP Pareto figure, implementation table, percentage CO₂ reduction, final-year EBIT change, yearly costs, capital expenditure and tokens here. Compare with the browser search. Run sensitivity cases: (a) the revised average-daily PV baseline versus reduced effective PV utilization (e.g., 80%); (b) 10%, 20%, 30% holding rate; (c) freight factor variations; (d) exclude actions with unquantified service risk. **Avoid presenting hypothetical scenarios as official Digital Twin outcomes.**
 
 ## 6. Limitations and further work
 

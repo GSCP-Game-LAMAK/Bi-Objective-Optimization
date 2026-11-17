@@ -1,12 +1,12 @@
-# LAMAK Optimization Studio — Workbook-backed v3
+# LAMAK Optimization Studio — Updated-workbook v4
 
 **Purpose:** Explore the CO₂–EBIT trade-off in the Eco Chain Reaction game over Years 0–4. The static website is designed for GitHub Pages and runs client-side. It is a decision-support prototype, not the official game Digital Twin.
 
 ## Source integrity
 
-Numerical backbone: `source/Eco_Chain_Reaction_Model.xlsx`. `build_model_data.py` imports the source workbook using `artifact_tool` and extracts **only** `Inputs`, `Assumptions`, `Routing`, `Suppliers`, `DC Locations`, `Energy`, `Transport`, `Stock Policies`, `Actions`, and `Sensitivity`.
+Numerical backbone: `source/Eco_Chain_Reaction_Model_Updated.xlsx`. `build_model_data.py` imports the updated source workbook using `artifact_tool` and extracts **only** `Inputs`, `Assumptions`, `Routing`, `Suppliers`, `DC Locations`, `Energy`, `Transport`, `Stock Policies`, and `Actions`.
 
-**Dashboard, Schedule and Audit are deliberately excluded.** They are never read to generate candidates or optimum results. The static `data/workbook_model.json` and `data/model.js` store computed values from the above source sheets. Source cell ranges are associated with individual actions. The source workbook is included for auditing, but it must be recalculated and saved in Excel before re-extraction if inputs change.
+**Dashboard, Schedule, Audit and Sensitivity are deliberately excluded.** The latter contains historical portfolio snapshots. They are never read to generate candidates or optimum results. The static `data/workbook_model.json` and `data/model.js` store computed values from the above source sheets. Source cell ranges are associated with individual actions. The updated source workbook is included for auditing; edited formulas must be recalculated and saved in Excel before re-extraction. The bundled extracted data is ready to publish without rerunning artifact_tool locally.
 
 25 actions correspond to the five options submitted by each group member; the expanded register includes 516 candidate actions across allowable categories, many requiring uncertainty screening.
 
@@ -29,7 +29,7 @@ node --test tests/*.test.cjs
 
 ## Exact MILP baseline (Python, optional)
 
-The fixed team-25 baseline has an independent exact mixed-integer formulation, solved using `scipy.optimize.milp` with HiGHS. It searches 25 EBIT ε-bounds and records **15 unique non-dominated candidates** as of the packaged input model. Each solve is MILP-optimal at its ε-bound; **this is not a full Pareto enumeration**.
+The fixed team-25 baseline has an independent exact mixed-integer formulation, solved using `scipy.optimize.milp` with HiGHS. It searches 25 EBIT ε-bounds and records **13 unique non-dominated candidates** as of the packaged input model. Each solve is MILP-optimal at its ε-bound; **this is not a full Pareto enumeration**.
 
 ```powershell
 python -m pip install scipy numpy
@@ -63,7 +63,7 @@ Commit/push the complete folder (including hidden `.github/workflows/deploy-page
 - No official extra CapEx budget is given; the optional financial caps are user-selected scenarios.
 - Unknown stock-related CO₂ is treated as **zero for numeric screening but not asserted to be zero in reality**. OTIF changes are unquantified; there is no certified service-level feasibility.
 - Regional routing uses representative destinations and calibrated effective masses, not measured shipments to all 85 wholesalers.
-- PV default uses the workbook's sinusoidal 12-hour self-consumption model; the annual matching switch is an analyst sensitivity model, not an official game interpretation.
+- PV default uses the revised workbook's average daily load cap and no credit for surplus. The new PV utilization slider permits 50–100% what-if scenarios, without changing the workbook's source values. The exact MILP reference applies only at the workbook's 100% assumption.
 - The 50/50 preference is applied to normalized results on the generated set. It is not claimed to reproduce the professor's undisclosed grading function.
 
 ## Scope limitations
@@ -73,3 +73,9 @@ The expanded candidate universe is not a fully specified game solver: it exclude
 ## Academic research
 
 See `research/ACADEMIC_REPORT_DRAFT.md` and `research/LITERATURE_NOTES.md` for four verified journal publications and report-ready references. These inform the methods and later sensitivity-analysis work.
+
+## November 17 update and compatibility
+
+The updated `Energy` worksheet replaces the previous intraday solar calculation with **average-daily demand matching**. In particular, PV Large B now saves 540.20 tCO₂/year and provides approximately €356,090/year incremental EBIT benefit, versus 255.58 tCO₂/year and €143,314/year in v3. See `WORKBOOK_CHANGE_AUDIT.md` for every changed alternative and the remaining discrepancies.
+
+Version 4 uses localStorage namespace `lamak-optimizer-v4` to prevent edited values saved by v3 from silently overriding the new workbook calculations. The optional **View exact MILP reference** button applies only to unedited 25-option inputs with 100% PV utilization and default constraints. If you change controls, use the interactive approximation and rerun the Python MILP offline for certified sampled bounds.

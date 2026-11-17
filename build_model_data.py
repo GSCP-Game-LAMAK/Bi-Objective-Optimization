@@ -2,13 +2,12 @@
 import json, re, pathlib, math, sys
 from artifact_tool import Blob,SpreadsheetFile
 ROOT=pathlib.Path(__file__).resolve().parent
-SOURCE=ROOT/'source'/'Eco_Chain_Reaction_Model.xlsx'
+SOURCE=ROOT/'source'/'Eco_Chain_Reaction_Model_Updated.xlsx'
 w=SpreadsheetFile.import_xlsx(Blob.load(str(SOURCE)))
 # SOURCE ALLOWLIST. Dashboard, Schedule, Audit are deliberately excluded.
-RANGES={'Inputs':'A6:E326','Assumptions':'A6:C22','Routing':'A5:AB67',
+RANGES={'Inputs':'A6:E326','Assumptions':'A5:C22','Routing':'A5:AB67',
         'Suppliers':'A5:S20','DC Locations':'A5:Q12','Energy':'A5:X17',
-        'Transport':'A5:N112','Stock Policies':'A5:T389','Actions':'A5:K521',
-        'Sensitivity':'A5:F45'}
+        'Transport':'A5:N112','Stock Policies':'A5:T389','Actions':'A5:K521'}
 source={}
 for sheet,rg in RANGES.items():
     rows=w.worksheets.get_item(sheet).get_range(rg).values
@@ -64,13 +63,15 @@ for area,rows in team.items():
 teamSet=set(sum(team.values(),[]))
 for a in actions:a['team']=a['id'] in teamSet
 metadata={
- 'title':'LAMAK workbook-backed optimization', 'sourceFile':SOURCE.name,
+ 'title':'LAMAK updated-workbook optimization v4', 'sourceFile':SOURCE.name,
  'sourceIncludedSheets':list(RANGES),
- 'sourceExcludedSheets':['Dashboard','Schedule','Audit'],
+ 'sourceExcludedSheets':['Dashboard','Schedule','Audit','Sensitivity'],
  'baselineCO2':4074,'baselineEBIT':31200000,'tokenCap':10,'annualTokenCap':3,
- 'method':'cached formula results calculated in workbook model sheets; no solution-sheet inputs',
+ 'method':'updated workbook cached formula results from 9 source/calculation sheets; no preset portfolio or historical sensitivity snapshots',
  'team25':team,
  'financialConvention':'opex excludes D&A; EBIT savings = -opex - depreciation - setup in implementation year',
+ 'energyMethod':'Average daily PV energy offsets mean site daily load, no credit for surplus; verified against Energy rows 6-17',
+ 'energyClarification':'The workbook labels one installation, daily average PV offset and heating factor interpretation as professor confirmed; this was not independently verified.',
  'stockUncertainty':'20% annual carrying rate and €0 fixed order cost are analyst assumptions, not case facts',
  'electricEligibility':'Based on the workbook Transport rows and its adjacency rules, not independently confirmed by professor',
  'sourceControls':{'energyChoice':'at most one energy installation','DC':'at most one first-year relocation, €90,000 setup','supplier':'one alternative share tier per material','packaging':'one share tier','transport':'one fuel per route / geographical area','stock':'one policy per facility-product'},

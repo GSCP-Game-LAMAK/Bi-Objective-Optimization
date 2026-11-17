@@ -8,7 +8,7 @@ const model=JSON.parse(fs.readFileSync(path.join(root,'data','workbook_model.jso
 function makeContext(scope='team'){
  const map=new Map();
  function el(id){if(!map.has(id))map.set(id,{
-  id,value:({weight:'50',timing:'flexible',cap:'', 'min-ebit':'',breadth:'450','baseline-ebit':'31200000',scope,'energy-mode':'workbook'})[id]||'',
+  id,value:({weight:'50',timing:'flexible',cap:'', 'min-ebit':'',breadth:'450','baseline-ebit':'31200000',scope,'pv-utilization':'100'})[id]||'',
   checked:({inventory:true,'risk-filter':true})[id]||false,style:{},classList:{toggle(){}},dataset:{},
   textContent:'',innerHTML:'',disabled:false,type:['inventory','risk-filter'].includes(id)?'checkbox':'text',
   addEventListener(){},querySelectorAll(){return[]},setAttribute(){},scrollIntoView(){},focus(){}
@@ -20,10 +20,10 @@ function makeContext(scope='team'){
  return {context,el};
 }
 test('dataset: no preset portfolio sheet is imported and exactly 25 team choices',()=>{
- assert.deepEqual(model.metadata.sourceExcludedSheets,['Dashboard','Schedule','Audit']);
+ assert.deepEqual(model.metadata.sourceExcludedSheets,['Dashboard','Schedule','Audit','Sensitivity']);
  assert.equal(model.actions.filter(a=>a.team).length,25);
  assert.equal(model.actions.length,516);
- assert.equal(model.actions.find(a=>a.id==='PVLargeB').co2.toFixed(2),'255.58');
+ assert.equal(model.actions.find(a=>a.id==='PVLargeB').co2.toFixed(2),'540.20');
  assert.equal(model.actions.find(a=>a.id==='Verona::SouthHVO').co2.toFixed(2),'17.75');
 });
 test('team shortlist contains five actions per member and matches source data',()=>{
@@ -76,4 +76,42 @@ test('exact MILP reference contains source-backed, inspected solutions',()=>{
  assert.ok(s.selected&&s.selected.tokens<=10);
  const ref=JSON.parse(fs.readFileSync(path.join(root,'data','exact_team_frontier.json'),'utf8'));
  assert.equal(ref.solutions.length,s.frontier);
+});
+
+
+test('revised PV large Plant B matches daily-average workbook and no-surplus rules',()=>{
+  const e=model.source.Energy.rows.find(r=>r[0]==='PVLargeB');
+  const a=model.actions.find(a=>a.id==='PVLargeB');
+  const p=e[15],l=e[11],gridEF=0.42,techEF=e[6];
+  assert.equal(p,1460000);
+  assert.equal(l,1460000);
+  assert.ok(Math.abs(a.co2-540.2)<0.00001);
+  assert.equal(model.source.Assumptions.rows.find(r=>r[0]==='Days/year')[1],365);
+  assert.ok(Math.abs(a.co2-(p*gridEF-l*techEF)/1000)<1e-9);
+  assert.ok(Math.abs(-a.opex-a.dep-356090.32173913042)<1e-6);
+});
+test('PV utilization sensitivity recalculates annual carbon and operating costs',()=>{
+  const {context,el}=makeContext();
+  el('pv-utilization').value='80';
+  const s=vm.runInContext('correctedAction(PROJECT_ACTIONS.find(a=>a.id==="PVLargeB"),options())',context);
+  assert.ok(Math.abs(s.co2-417.56)<1e-6);
+  assert.ok(s.opex>model.actions.find(a=>a.id==='PVLargeB').opex);
+});
+test('source sheet extraction never reads preset portfolios or historical sensitivity snapshots',()=>{
+  const included=new Set(model.metadata.sourceIncludedSheets);
+  for(const name of ['Dashboard','Schedule','Audit','Sensitivity']) assert.ok(!included.has(name));
+  for(const name of ['Inputs','Assumptions','Routing','Suppliers','DC Locations','Energy','Transport','Stock Policies','Actions']) assert.ok(included.has(name));
+});
+
+test('exact reference CSV is regenerated from the same updated solver output',()=>{
+ const data=JSON.parse(fs.readFileSync(path.join(root,'data','exact_team_frontier.json'),'utf8'));
+ const text=fs.readFileSync(path.join(root,'data','exact_team_frontier.csv'),'utf8').trim().split(/\r?\n/);
+ assert.equal(text.length-1,data.solutions.length);
+ assert.ok(Math.abs(Number(text[1].split(',')[1])-data.solutions[0].saved)<0.0006);
+});
+test('Inspect updates the selected strategy heading in the browser view',async()=>{
+ const {context,el}=makeContext();
+ await vm.runInContext('run()',context,{timeout:3000});
+ vm.runInContext('inspectStrategy(0)',context);
+ assert.match(el('plan-heading').textContent,/Inspecting strategy/);
 });

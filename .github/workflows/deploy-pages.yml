@@ -1,4 +1,4 @@
-name: Test, solve and deploy LAMAK v3
+name: Test, solve and deploy LAMAK v4
 
 on:
   push:

@@ -2,7 +2,7 @@
 SciPy/HiGHS. This is a sampled Pareto set, not a full enumeration of the integer frontier.
 Dashboard and Schedule sheets are not imported or referenced.
 """
-import json, pathlib, math
+import json, pathlib, math, csv
 from scipy.optimize import milp, Bounds, LinearConstraint
 from scipy.sparse import lil_matrix, vstack, csr_matrix
 import numpy as np
@@ -86,3 +86,10 @@ result={'description':'Exact MILP optima at sampled epsilon (minimum EBIT) thres
 out=ROOT/'data'/'exact_team_frontier.json';out.write_text(json.dumps(result,separators=(',',':')),encoding='utf-8')
 (ROOT/'data'/'exact_team.js').write_text('window.LAMAK_EXACT = '+json.dumps(result,separators=(',',':'))+';\n',encoding='utf-8')
 print('Exact MILP 25-option baseline:',len(non),'nondominated sampled epsilon strategies; max carbon',round(max(x['saved'] for x in non),2),'t/5y, max EBIT',round(max(x['ebit'] for x in non)))
+
+with (ROOT/'data'/'exact_team_frontier.csv').open('w',encoding='utf-8',newline='') as fp:
+    writer=csv.writer(fp)
+    writer.writerow(['solution','five_year_CO2_saved_t','five_year_delta_EBIT_EUR','final_year_delta_EBIT_EUR','tokens','energy','selected_actions'])
+    for rank,s in enumerate(non,1):
+        energy=next((A[p['id']]['name'] for p in s['picks'] if A[p['id']]['category']=='Energy'),'No energy action')
+        writer.writerow([rank,round(s['saved'],3),round(s['ebit'],2),round(s['annualEbit'][4],2),s['tokens'],energy,' | '.join(f"{p['id']}@Year{p['y']}" for p in s['picks'])])
