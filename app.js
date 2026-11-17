@@ -1,14 +1,14 @@
-/* LAMAK v5 · workbook-backed 30-action exact MILP reference + transparent scenario screening.
+/* LAMAK v6 · financially bounded workbook-backed 30-action exact MILP reference + transparent scenario screening.
    Untrusted preset workbook Dashboard/Schedule portfolios are NEVER imported. */
 'use strict';
-if (!window.LAMAK_MODEL?.actions || !window.LAMAK_EXACT_V5?.guards) {
-  throw new Error('Missing data/model.js or data/exact_v5.js; serve the complete v5 folder.');
+if (!window.LAMAK_MODEL?.actions || !window.LAMAK_EXACT_V6?.modes) {
+  throw new Error('Missing data/model.js or data/exact_v6.js; serve the complete v6 folder.');
 }
 const MODEL = window.LAMAK_MODEL;
-const REFERENCE = window.LAMAK_EXACT_V5;
+const REFERENCE = window.LAMAK_EXACT_V6;
 const BASE_CO2 = MODEL.metadata.baselineCO2;
 const HORIZON = 5, TOKEN_CAP = 10, ANNUAL_CAP = 3;
-const STORE = 'lamak-optimizer-v5';
+const STORE = 'lamak-optimizer-v6';
 const $ = id => document.getElementById(id);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt = (n, d=0) => Number(n || 0).toLocaleString('en-US',{minimumFractionDigits:d, maximumFractionDigits:d});
@@ -34,6 +34,7 @@ const coreIds = new Set([
 ]);
 function currentOptions() {
   return {weight:Number($('weight').value)/100,scope:$('scope').value, guard:$('ebit-guard').value,
+    normalization:$('normalization').value,
     timing:$('timing').value,cap:$('cap').value===''?Infinity:Number($('cap').value),
     minEbit:$('min-ebit').value===''?-Infinity:Number($('min-ebit').value),
     beam:Number($('breadth').value),baseline:Number($('baseline-ebit').value)||MODEL.metadata.baselineEBIT,
@@ -44,10 +45,21 @@ function isReferenceEligible(o=currentOptions()) {
   return !hasEdits && o.scope==='core' && o.timing==='flexible' && !o.inventory && o.pvUse===1 &&
     o.cap===Infinity && o.minEbit===-Infinity;
 }
-function score(s,w=currentOptions().weight) {
-  const b=REFERENCE.anchors;
+function selectedMode(o=currentOptions()) {
+  return REFERENCE.modes[o.normalization] || REFERENCE.modes.bounded;
+}
+function scoreForMode(s, mode='bounded', w=currentOptions().weight) {
+  const b=REFERENCE.modes[mode].anchors;
   return w*(s.saved-b.carbonLow)/(b.carbonHigh-b.carbonLow) +
     (1-w)*(s.ebit-b.ebitLow)/(b.ebitHigh-b.ebitLow);
+}
+function score(s,w=currentOptions().weight) {
+  return scoreForMode(s,currentOptions().normalization,w);
+}
+function requiredEbitFloor(o=currentOptions()) {
+  const mode=selectedMode(o);
+  const selectedGuard=o.guard==='nonnegative'?0:o.guard==='loss1m'?-1000000:-Infinity;
+  return Math.max(mode.financialFloor??-Infinity,selectedGuard);
 }
 function correctedAction(base,o) {
   const a={...base};
@@ -198,7 +210,8 @@ function groups(o,rows) {
   return [...preferred.filter(x=>set.has(x)),...([...set].filter(x=>!preferred.includes(x)).sort())];
 }
 function exactDataForGuard(guard) {
-  return REFERENCE.guards[guard] || REFERENCE.guards.none;
+  const mode=selectedMode();
+  return mode.guards[guard] || mode.guards.none;
 }
 function loadExact() {
   if(!isReferenceEligible()) {
@@ -208,11 +221,11 @@ function loadExact() {
   lastOptions=currentOptions();lastEngine='exact';inspectedBenchmark=false;
   const guard=exactDataForGuard(lastOptions.guard);
   const optionset=Object.values(guard.weighted);
-  const extra=lastOptions.guard==='none'?REFERENCE.solutions:[];
+  const extra=lastOptions.guard==='none'?selectedMode(lastOptions).solutions:[];
   frontier=pareto([...optionset,...extra]);
   selected=guard.weighted[lastOptions.weight.toFixed(2)];
   evaluated=REFERENCE.solves;
-  $('status').textContent=`Exact MILP · ${REFERENCE.binaryColumns} binary columns · ${lastOptions.guard==='none'?'no EBIT floor':lastOptions.guard}`;
+  $('status').textContent=`Exact MILP · ${lastOptions.normalization==='bounded'?'bounded €8.385m EBIT-loss limit':'unrestricted reference'} · ${REFERENCE.binaryColumns} binary columns · ${lastOptions.guard}`;
   render();return true;
 }
 async function runApprox() {
@@ -250,8 +263,8 @@ async function runApprox() {
     $('status').textContent=`Exploring ${gi+1} model families · ${fmt(evaluated)} evaluations`;
     if(gi%2===0)await new Promise(r=>setTimeout(r,0));
   }
-  const guard=o.guard==='nonnegative'?0:o.guard==='loss1m'?-1000000:-Infinity;
-  const valid=states.filter(s=>respectsHardRules(s,byId)&&s.ebit>=guard&&o.baseline+s.annualEbit[4]>=o.minEbit);
+  const floor=requiredEbitFloor(o);
+  const valid=states.filter(s=>respectsHardRules(s,byId)&&s.ebit>=floor-0.0001&&o.baseline+s.annualEbit[4]>=o.minEbit);
   frontier=pareto(valid);
   selected=frontier.length?frontier.reduce((best,s)=>score(s,o.weight)>score(best,o.weight)?s:best,frontier[0]):null;
   running=false;$('run-main').disabled=false;
@@ -295,6 +308,15 @@ function render() {
   const opt=currentOptions();
   $('weight-value').textContent=`${fmt(opt.weight*100)}%`;
   $('pv-utilization-value').textContent=`${fmt(opt.pvUse*100)}%`;
+  const b=selectedMode(opt).anchors;
+  $('model-anchors').textContent=`${opt.normalization==='bounded'?'Financially bounded payoff table':'Unrestricted mathematical payoff table'} · R_Emax = ${fmt(b.carbonLow,2)} t · R_max = ${fmt(b.carbonHigh,2)} t · E_Rmax = ${euros(b.ebitLow)} · E_max = ${euros(b.ebitHigh)}. ${opt.normalization==='bounded'?'Cumulative ΔEBIT ≥ −€8,384,875.34 applies to every candidate.':'This mode is retained for comparison and allows economically extreme portfolios.'}`;
+  $('reference-status').textContent=opt.normalization==='bounded'?'FINANCIALLY BOUNDED · DEFAULT':'UNRESTRICTED · REFERENCE';
+  $('reference-price').textContent=`€${fmt((b.ebitHigh-b.ebitLow)/(b.carbonHigh-b.carbonLow),0)} / t CO₂`;
+  $('reference-price-label').textContent='Implicit five-year EBIT sacrifice per extra tonne at 50/50 (reference normalization)';
+  $('anchor-rmax').textContent=fmt(b.carbonHigh,2)+' t';
+  $('anchor-ermax').textContent=euros(b.ebitLow);
+  $('anchor-remax').textContent=fmt(b.carbonLow,2)+' t';
+  $('anchor-emax').textContent=euros(b.ebitHigh);
   if(!selected){
     for(const id of ['metric-co2','metric-ebit','metric-final','metric-tokens','metric-score','metric-cash'])$(id).textContent='—';
     $('pareto').innerHTML='<div class="notice">No strategies available. Run optimization.</div>';
@@ -313,8 +335,8 @@ function render() {
   $('strategy-total').textContent=`${frontier.length} alternatives`;
   $('search-note').className=lastEngine==='exact'?'notice good':'notice';
   $('search-note').textContent=lastEngine==='exact'
-    ?`CERTIFIED SCORE OPTIMUM at the selected 5%-increment weight, for the 30-choice core and selected EBIT guardrail. ${REFERENCE.binaryColumns} MILP columns, including ${REFERENCE.packPatternCount} progressive packaging patterns. The plotted Pareto points are a sampled—not exhaustive—set.${inspectedBenchmark?' You are inspecting your teammate’s benchmark, not the certified optimizer selection.':''}`
-    :`APPROXIMATE scenario search: ${fmt(evaluated)} candidate profiles tested. Scores use the fixed workbook-core payoff-table endpoints; they are not recalculated when edited inputs or scope changes. This is not a global optimality certificate.`;
+    ?`CERTIFIED SCORE OPTIMUM at the selected 5%-increment weight, for the 30-choice core and selected EBIT guardrail. ${REFERENCE.binaryColumns} MILP columns, including ${REFERENCE.packPatternCount} progressive packaging patterns. ${opt.normalization==='bounded'?'Financially bounded mode enforces the €8.385m cumulative EBIT-loss floor.':'Unrestricted academic reference mode allows high EBIT losses.'} The plotted Pareto points are a sampled—not exhaustive—set.${inspectedBenchmark?' You are inspecting your teammate’s benchmark, not the certified optimizer selection.':''}`
+    :`APPROXIMATE scenario search: ${fmt(evaluated)} candidate profiles tested. Scores use the selected, fixed workbook-core reference endpoints. Bounded mode enforces its financial floor even during exploratory screening; inputs and anchors are not recalculated after edits. This is not a global optimality certificate.`;
   $('tokens-label').textContent=`${selected.tokens} / 10`;
   $('token-progress').style.width=`${selected.tokens*10}%`;
   $('plan-count').textContent=`${selected.picks.length} steps`;
@@ -323,7 +345,6 @@ function render() {
   $('selected-tags').innerHTML=selected.picks.length?selected.picks.map(p=>{
     const a=lookup.get(p.id);return `<span class="tag" title="${p.tokens} tokens in year ${p.y}">${esc(a?.name||p.id)} · Y${p.y}${p.fromTier>0?' · upgrade':''}</span>`;
   }).join(''):'<span class="hint">Baseline: no interventions</span>';
-  $('model-anchors').textContent=`Global reference endpoints: CO₂ ${fmt(REFERENCE.anchors.carbonLow,0)}–${fmt(REFERENCE.anchors.carbonHigh,0)} t saved; EBIT ${briefEuro(REFERENCE.anchors.ebitLow)}–${briefEuro(REFERENCE.anchors.ebitHigh)}. Fixed across all financial guardrails.`;
   renderPareto();renderYear();renderFrontierTable();renderPlan();
 }
 function svgOpen(w,h){return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" role="img" aria-label="Sampled Pareto frontier, emissions against EBIT">`;}
@@ -397,14 +418,14 @@ function renderPlan(){
     return `<tr><td>${esc(name)}</td><td>Year ${p.y}</td><td>${p.tokens}</td><td class="right">${a.co2Unknown?'Unknown (0 screening proxy)':fmt(annual,2)+' t'}</td><td class="right">${euros(annualCost)}</td><td>${esc(note)}</td></tr>`;
   }).join('');
   $('benchmark-compare').textContent=lastEngine==='exact'
-    ?`Your teammate's plan: ${fmt(REFERENCE.teammate.saved,2)} t avoided; ${euros(REFERENCE.teammate.ebit)} Δ EBIT; ${fmt(score(REFERENCE.teammate)*100,2)}% normalized score. Select “Inspect teammate plan” to examine it.`
-    :`Workbook inputs are editable, but the teammate benchmark and global normalization endpoints always refer to the unchanged workbook. Re-run exact MILP in Python after substantive input edits.`;
+    ?`Your teammate's plan: ${fmt(REFERENCE.teammate.saved,2)} t avoided; ${euros(REFERENCE.teammate.ebit)} Δ EBIT; ${fmt(score(REFERENCE.teammate)*100,2)}% score under ${currentOptions().normalization} normalization. Select “Inspect teammate plan” to examine it.`
+    :`Workbook inputs are editable, but the teammate benchmark and normalization anchors for either mode always refer to the unchanged workbook. Re-run exact MILP in Python after substantive input edits.`;
 }
 function renderAudit() {
   const warnings=[
     ['No preset answer leakage','The extractor imports only Inputs, Assumptions, Routing, Suppliers, DC Locations, Energy, Transport, Stock Policies, Actions. Dashboard, Schedule, Audit and historical Sensitivity are excluded.'],
-    ['Payoff-table normalization','Core exact scores use separately proven EBIT-only and CO₂-only extremes, not minima/maxima of a truncated browser frontier. The professor has not specified an official score formula.'],
-    ['EBIT safeguards are scenarios','The financial guardrail (no five-year loss, or max €1m loss) is a user-selected business preference, not a professor-imposed project constraint.'],
+    ['Payoff-table normalization','Core exact scores use separately proven EBIT-only and CO₂-only extremes, not minima/maxima of a truncated browser frontier. The professor has not specified an official score formula. Financially bounded mode recomputes BOTH R_max and its associated E_Rmax under the stated EBIT floor; the €8.385m threshold is a decision preference, NOT a 90–95% confidence interval.'],
+    ['EBIT safeguards are scenarios','The default €8.385m loss boundary and additional guardrails (no five-year loss, or max €1m loss) are user-selected business preferences, not a professor-imposed project constraint.'],
     ['Inventory and service effects','Stock-policy CO₂ and OTIF effects remain unquantified. Stock carrying-cost proxies are OFF by default and excluded from the certified 30-action core.'],
     ['Progressive adoption','Slide 25 permits progressive packaging; charging only the incremental tokens for later upgrades is our explicit assumption, not a confirmed professor rule. Supplier sourcing remains a single 33/66/100% choice because staged sourcing is not established in the source.'],
     ['Energy and routing assumptions','The updated workbook uses daily-average PV matching. Distance/mass regional estimates and grid emission factors are assumptions, not measured company shipment records.'],
@@ -451,26 +472,27 @@ function exportCsv(){
   frontier.slice().sort((a,b)=>score(b)-score(a)).forEach((s,i)=>{
     const fields=[i+1,s.saved.toFixed(5),s.ebit.toFixed(2),s.cash.toFixed(2),s.annualEbit[4].toFixed(2),s.tokens,score(s).toFixed(7),JSON.stringify(s.picks)];
     lines.push(fields.map(x=>'"'+String(x).replaceAll('"','""')+'"').join(','));
-  });download('LAMAK_v5_Pareto.csv',lines.join('\n'),'text/csv');
+  });download('LAMAK_v6_Pareto.csv',lines.join('\n'),'text/csv');
 }
 function exportPlan() {
   if(!selected){alert('No selected strategy');return;}
-  const output={version:'v5',source:MODEL.metadata.sourceFile,excludedSheets:MODEL.metadata.sourceExcludedSheets,
+  const output={version:'v6',source:MODEL.metadata.sourceFile,excludedSheets:MODEL.metadata.sourceExcludedSheets,
     solver:lastEngine,optimality:lastEngine==='exact'?'Exact at selected 5% weight and guard':'Heuristic only',
-    preferenceWeight:currentOptions().weight,guard:currentOptions().guard,normalization:REFERENCE.anchors,
+    preferenceWeight:currentOptions().weight,guard:currentOptions().guard,normalizationMode:currentOptions().normalization,normalization:selectedMode().anchors,financialFloor:requiredEbitFloor(),
+    originalUnrestrictedAnchors:REFERENCE.modes.unrestricted.anchors,
     selected:{...selected,score:score(selected),carbonReductionPct:selected.saved/(BASE_CO2*HORIZON)*100,year4CarbonReductionPct:selected.annualSaved[4]/BASE_CO2*100,
       year4EbitPct:selected.annualEbit[4]/currentOptions().baseline*100},
     caveats:['No measured OTIF impacts','Stock holding-cost and CO2 assumptions not validated','Workbook logistics and energy assumptions are modeled estimates']};
-  download('LAMAK_v5_Selected_Plan.json',JSON.stringify(output,null,2),'application/json');
+  download('LAMAK_v6_Selected_Plan.json',JSON.stringify(output,null,2),'application/json');
 }
-function exportModel(){return JSON.stringify({version:5,actions:actions.map(a=>({id:a.id,tokens:a.tokens,co2:a.co2,cost:a.cost,capex:a.capex,setup:a.setup,dep:a.dep,year:a.year,edited:a.edited}))},null,2);}
+function exportModel(){return JSON.stringify({version:6,actions:actions.map(a=>({id:a.id,tokens:a.tokens,co2:a.co2,cost:a.cost,capex:a.capex,setup:a.setup,dep:a.dep,year:a.year,edited:a.edited}))},null,2);}
 function save(){
-  try{localStorage.setItem(STORE,JSON.stringify({version:5,actions:actions.filter(a=>Object.keys(a.edited).length).map(a=>({id:a.id,tokens:a.tokens,co2:a.co2,cost:a.cost,capex:a.capex,setup:a.setup,dep:a.dep,year:a.year,edited:a.edited})),options:Object.fromEntries(['scope','weight','timing','cap','min-ebit','breadth','baseline-ebit','inventory','risk-filter','pv-utilization','ebit-guard'].map(id=>[id,$(id).type==='checkbox'?$(id).checked:$(id).value]))}));
+  try{localStorage.setItem(STORE,JSON.stringify({version:6,actions:actions.filter(a=>Object.keys(a.edited).length).map(a=>({id:a.id,tokens:a.tokens,co2:a.co2,cost:a.cost,capex:a.capex,setup:a.setup,dep:a.dep,year:a.year,edited:a.edited})),options:Object.fromEntries(['scope','weight','timing','cap','min-ebit','breadth','baseline-ebit','inventory','risk-filter','pv-utilization','ebit-guard','normalization'].map(id=>[id,$(id).type==='checkbox'?$(id).checked:$(id).value]))}));
     $('status').textContent='Inputs saved locally in this browser';
   }catch(e){alert('Local save failed: '+e.message);}
 }
 function readSave(){
-  try{const state=JSON.parse(localStorage.getItem(STORE)||'null');if(!state||state.version!==5)return;
+  try{const state=JSON.parse(localStorage.getItem(STORE)||'null');if(!state||state.version!==6)return;
     const changes=new Map((state.actions||[]).map(a=>[a.id,a]));
     actions=ORIGINAL.map(a=>changes.has(a.id)?{...a,...Object.fromEntries(['tokens','co2','cost','capex','setup','dep','year'].filter(k=>Object.hasOwn(changes.get(a.id),k)).map(k=>[k,changes.get(a.id)[k]])),edited:changes.get(a.id).edited||{}}:structuredClone(a));
     hasEdits=actions.some(a=>Object.keys(a.edited).length>0);
@@ -485,16 +507,16 @@ function handlers(){
   $('rerun').onclick=run;
   $('export-csv').onclick=exportCsv;$('export-csv-2').onclick=exportCsv;
   $('export-plan').onclick=exportPlan;
-  $('save').onclick=save;$('export-model').onclick=()=>download('LAMAK_v5_Model_Edits.json',exportModel(),'application/json');
+  $('save').onclick=save;$('export-model').onclick=()=>download('LAMAK_v6_Model_Edits.json',exportModel(),'application/json');
   $('weight').oninput=selectForWeight;
-  $('reset').onclick=()=>{if(!confirm('Restore the supplied workbook values and v5 default controls?'))return;
+  $('reset').onclick=()=>{if(!confirm('Restore the supplied workbook values and v6 bounded default controls?'))return;
     actions=structuredClone(ORIGINAL);hasEdits=false;
-    $('scope').value='core';$('weight').value='50';$('ebit-guard').value='none';$('timing').value='flexible';
+    $('scope').value='core';$('weight').value='50';$('ebit-guard').value='none';$('normalization').value='bounded';$('timing').value='flexible';
     $('inventory').checked=false;$('pv-utilization').value='100';$('cap').value='';$('min-ebit').value='';
     $('baseline-ebit').value=String(MODEL.metadata.baselineEBIT);
     localStorage.removeItem(STORE);
     renderData();loadExact();};
-  for(const id of ['scope','timing','cap','min-ebit','breadth','baseline-ebit','inventory','risk-filter','pv-utilization','ebit-guard']){
+  for(const id of ['scope','timing','cap','min-ebit','breadth','baseline-ebit','inventory','risk-filter','pv-utilization','ebit-guard','normalization']){
     $(id).addEventListener('change',()=>{
       frontier=[];selected=null;render();
       $('status').textContent=id==='scope'?'Choice universe changed · run optimizer':'Settings changed · run optimizer';

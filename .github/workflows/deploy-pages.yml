@@ -1,4 +1,4 @@
-name: Test and deploy LAMAK v5
+name: Validate and deploy LAMAK v6
 
 on:
   push:
@@ -25,23 +25,23 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-      - name: Install reproducible MILP dependencies
+      - name: Install independent exact-solver dependencies
         run: python -m pip install --disable-pip-version-check numpy scipy
-      - name: Regenerate certified source-backed MILP results
-        run: python scripts/solve_exact_v5.py
-      - name: Independently cross-check coefficients, constraints, optimal solutions and sensitivity
-        run: python scripts/independent_crosscheck.py
-      - name: Check syntax and all unit tests
+      - name: Regenerate both bounded and unrestricted exact MILP results
+        run: python scripts/solve_exact_v6.py
+      - name: Independently verify source coefficients, anchors and 126 MILP optima
+        run: python scripts/independent_crosscheck_v6.py
+      - name: Validate JavaScript syntax and v6 application model
         run: |
           node --check app.js
           node --check data/model.js
-          node --check data/exact_v5.js
-          node --test tests/v5.test.cjs
-      - name: Build static GitHub Pages site
+          node --check data/exact_v6.js
+          node --test tests/v6.test.cjs
+      - name: Prepare self-contained GitHub Pages static output
         run: |
           mkdir -p _site/data
           cp index.html app.js styles.css _site/
-          cp data/model.js data/workbook_model.json data/exact_v5.js data/exact_v5.json data/exact_v5_frontier.csv _site/data/
+          cp data/model.js data/workbook_model.json data/exact_v6.js data/exact_v6.json data/exact_v6_frontier.csv _site/data/
           touch _site/.nojekyll
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
@@ -55,6 +55,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Deploy to GitHub Pages
+      - name: Deploy validated website
         id: deployment
         uses: actions/deploy-pages@v4

@@ -15,3 +15,15 @@
 .pareto-dot:hover{stroke:#fff;stroke-width:2.5px}
 @media(max-width:1050px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){.metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* v6: bounded-reference anchor dashboard */
+.bounded-hero{background:linear-gradient(118deg,#102e37,#10232d 55%,#153c34)}
+.anchor-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.anchor{border:1px solid #345863;background:#0b2330;border-radius:12px;padding:15px;min-width:0}
+.anchor small{display:block;color:#9cb8c0;font-size:11px;min-height:30px}
+.anchor strong{display:block;font:700 clamp(19px,2vw,27px) 'Space Grotesk';margin-top:9px;overflow-wrap:anywhere;color:#bcf7e4}
+.price-note{border-top:1px solid #2d5157;margin-top:15px;padding-top:14px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.price-note strong{color:#cef58e;font:700 20px 'Space Grotesk'}
+.price-note span{color:#a6bec5;font-size:11px}
+@media(max-width:1000px){.anchor-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:600px){.anchor-grid{grid-template-columns:1fr 1fr}.anchor{padding:11px}.anchor strong{font-size:18px}}
