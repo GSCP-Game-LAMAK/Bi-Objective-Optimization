@@ -1,0 +1,11 @@
+scenario,guard,five_year_co2_saved_t,five_year_delta_ebit_eur,five_year_delta_cash_eur,normalized_score,token_allocation,actions
+baseline,unrestricted,5834.30396,-6165539.42,-6600539.42,0.761790,"[3, 3, 3, 1, 0]",Gamma3@Y1; Lactose3@Y2; PVLargeB@Y0; Pack1@Y3[+1t]
+baseline,no_ebit_loss,4049.03304,553057.71,118057.71,0.672021,"[3, 3, 3, 0, 1]",Gamma1@Y4; Lactose3@Y1; PVLargeB@Y0; Pack3@Y2[+3t]
+solar80,unrestricted,5221.10396,-6623959.74,-7058959.74,0.655981,"[3, 3, 3, 1, 0]",Gamma3@Y1; Lactose3@Y2; PVLargeB@Y0; Pack1@Y3[+1t]
+solar80,no_ebit_loss,3435.83304,94637.39,-340362.61,0.566212,"[3, 3, 3, 0, 1]",Gamma1@Y4; Lactose3@Y1; PVLargeB@Y0; Pack3@Y2[+3t]
+suppliers20,unrestricted,5472.00414,-5690727.04,-6125727.04,0.719485,"[3, 3, 3, 1, 0]",Gamma3@Y2; Lactose3@Y1; PVLargeB@Y0; Pack1@Y3[+1t]
+suppliers20,no_ebit_loss,4049.03304,305665.71,-129334.29,0.665315,"[3, 3, 3, 0, 1]",Gamma1@Y4; Lactose3@Y1; PVLargeB@Y0; Pack3@Y2[+3t]
+freight20,unrestricted,5834.30396,-6165539.42,-6600539.42,0.761790,"[3, 3, 3, 1, 0]",Gamma3@Y1; Lactose3@Y2; PVLargeB@Y0; Pack1@Y3[+1t]
+freight20,no_ebit_loss,4049.03304,553057.71,118057.71,0.672021,"[3, 3, 3, 0, 1]",Gamma1@Y4; Lactose3@Y1; PVLargeB@Y0; Pack3@Y2[+3t]
+combined,unrestricted,4858.80414,-6149147.36,-6584147.36,0.613677,"[3, 3, 3, 1, 0]",Gamma3@Y2; Lactose3@Y1; PVLargeB@Y0; Pack1@Y3[+1t]
+combined,no_ebit_loss,3274.61854,524505.82,89505.82,0.553313,"[3, 3, 3, 1, 0]",Lactose3@Y1; PVLargeB@Y0; Pack3@Y2[+3t]; Verona::SouthHVO@Y3

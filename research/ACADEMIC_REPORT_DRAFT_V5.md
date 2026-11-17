@@ -87,3 +87,8 @@ A mathematically certified weighted optimum is possible for a restricted, audita
 4. Sepehri, A., Tirkolaee, E. B., Simic, V., & Ali, S. S. (2024). Designing a reliable-sustainable supply chain network: adaptive m-objective ε-constraint method. *Annals of Operations Research*, 359(1), 921–952. https://doi.org/10.1007/s10479-024-05961-2
 
 *All numeric data are drawn from the team's revised workbook and the publicly supplied case requirements; references provide methodological context only.*
+
+
+## Appendix — independent replication and financial horizon sensitivity (17 November 2026)
+
+An independently encoded 130-variable mixed-integer linear optimization model, using annual packaging-tier thresholds rather than pre-enumerated ramp columns, reproduced the exact v5 cumulative-CO₂ and cumulative-EBIT objective anchors and the 50/50 optima for unrestricted, €1 million loss-limited, and nonnegative-cumulative-EBIT cases. All 516 workbook `Actions` rows were reconciled to the source Excel workbook and 126 supporting Energy, Supplier, and Transport calculations checked. The reproducible results and assumption stresses are in `VALIDATION_REPORT.md`. The profitability time horizon matters: cumulative nonnegative EBIT selects a portfolio with a −€390,824 Year-4 EBIT impact, whereas requiring **Year-4 ΔEBIT ≥ 0**, while retaining the same 50/50 cumulative objective, selects the four-action teammate benchmark (3,887.82 tonnes saved, +€1,116,960 cumulative EBIT). The instructor has not specified either guardrail, and these are alternative business scenarios, not an authoritative grading function.

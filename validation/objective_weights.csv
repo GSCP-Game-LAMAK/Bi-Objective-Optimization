@@ -1,0 +1,11 @@
+carbon_weight,guard,co2_t,delta_ebit_eur,score,actions
+0.4,unrestricted,5472.00414,-4443687.04,0.735147,Gamma3@Y2; Lactose3@Y1; PVLargeB@Y0; Pack1@Y3[+1t]
+0.4,no_ebit_loss,4049.03304,553057.71,0.724309,Gamma1@Y4; Lactose3@Y1; PVLargeB@Y0; Pack3@Y2[+3t]
+0.45,unrestricted,5472.00414,-4443687.04,0.744217,Gamma3@Y2; Lactose3@Y1; PVLargeB@Y0; Pack1@Y3[+1t]
+0.45,no_ebit_loss,4049.03304,553057.71,0.698165,Gamma1@Y4; Lactose3@Y1; PVLargeB@Y0; Pack3@Y2[+3t]
+0.5,unrestricted,5834.30396,-6165539.42,0.761790,Gamma3@Y1; Lactose3@Y2; PVLargeB@Y0; Pack1@Y3[+1t]
+0.5,no_ebit_loss,4049.03304,553057.71,0.672021,Gamma1@Y4; Lactose3@Y1; PVLargeB@Y0; Pack3@Y2[+3t]
+0.55,unrestricted,5834.30396,-6165539.42,0.781043,Gamma3@Y1; Lactose3@Y2; PVLargeB@Y0; Pack1@Y3[+1t]
+0.55,no_ebit_loss,4049.03304,553057.71,0.645877,Gamma1@Y4; Lactose3@Y1; PVLargeB@Y0; Pack3@Y2[+3t]
+0.6,unrestricted,5834.30396,-6165539.42,0.800297,Gamma3@Y1; Lactose3@Y2; PVLargeB@Y0; Pack1@Y3[+1t]
+0.6,no_ebit_loss,4049.03304,553057.71,0.619732,Gamma1@Y4; Lactose3@Y1; PVLargeB@Y0; Pack3@Y2[+3t]

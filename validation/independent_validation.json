@@ -1,0 +1,498 @@
+{
+  "source_file": "Eco_Chain_Reaction_Model_Updated.xlsx",
+  "source_sha256": "67823502543875c14dde51e1b759b6602a9a0fbf92102714e0854ac0dccb7b1c",
+  "source_action_rows_checked": 516,
+  "source_reconciliation_differences": 0,
+  "category_action_coefficients_reconciled": 126,
+  "exact_model": "Independent binaries per action-year plus monotone packaging threshold-year binaries",
+  "binary_vars": 130,
+  "constraints": 43,
+  "endpoints": {
+    "carbonLow": 2701.0,
+    "carbonHigh": 5984.252361544,
+    "ebitLow": -16666409.48219948,
+    "ebitHigh": 1780451.608695652
+  },
+  "comparison": [
+    {
+      "scenario": "Unrestricted 50/50",
+      "co2": 5834.3039609,
+      "ebit": -6165539.419154347,
+      "cash": -6600539.419154347,
+      "tokens": [
+        3,
+        3,
+        3,
+        1,
+        0
+      ],
+      "pack_tiers": [
+        0,
+        0,
+        0,
+        1,
+        1
+      ],
+      "picks": [
+        "Gamma3@Y1",
+        "Lactose3@Y2",
+        "PVLargeB@Y0",
+        "Pack1@Y3[+1t]"
+      ],
+      "score": 0.7617895028848578
+    },
+    {
+      "scenario": "EBIT loss ≤ €1m",
+      "co2": 4417.9573707624995,
+      "ebit": -679863.3860105977,
+      "cash": -1114863.3860105975,
+      "tokens": [
+        3,
+        3,
+        3,
+        1,
+        0
+      ],
+      "pack_tiers": [
+        0,
+        0,
+        2,
+        3,
+        3
+      ],
+      "picks": [
+        "Gamma1@Y2",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack2@Y2[+2t]",
+        "Pack3@Y3[+1t]"
+      ],
+      "score": 0.6947854892086704
+    },
+    {
+      "scenario": "EBIT nonnegative",
+      "co2": 4049.0330443874996,
+      "ebit": 553057.7079269022,
+      "cash": 118057.70792690245,
+      "tokens": [
+        3,
+        3,
+        3,
+        0,
+        1
+      ],
+      "pack_tiers": [
+        0,
+        0,
+        3,
+        3,
+        3
+      ],
+      "picks": [
+        "Gamma1@Y4",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack3@Y2[+3t]"
+      ],
+      "score": 0.6720209153862915
+    },
+    {
+      "scenario": "Teammate benchmark",
+      "co2": 3887.818537833773,
+      "ebit": 1116959.9146010038,
+      "cash": 681959.9146010039,
+      "tokens": [
+        3,
+        3,
+        3,
+        1,
+        0
+      ],
+      "picks": [
+        "PVLargeB@Y0",
+        "Lactose3@Y1",
+        "Pack3@Y2",
+        "Verona::SouthHVO@Y3"
+      ],
+      "score": 0.6627543804329452
+    }
+  ],
+  "final_year_ebit_floor_scenario": {
+    "co2": 3887.8185378337726,
+    "ebit": 1116959.9146010038,
+    "cash": 681959.9146010039,
+    "tokens": [
+      3,
+      3,
+      3,
+      1,
+      0
+    ],
+    "pack_tiers": [
+      0,
+      0,
+      3,
+      3,
+      3
+    ],
+    "picks": [
+      "Lactose3@Y1",
+      "PVLargeB@Y0",
+      "Pack3@Y2[+3t]",
+      "Verona::SouthHVO@Y3"
+    ],
+    "year4_ebit": 198562.68814180623
+  },
+  "sensitivity": [
+    {
+      "scenario": "baseline",
+      "guard": "unrestricted",
+      "co2_saved_t": 5834.3039609,
+      "ebit_change_eur": -6165539.419154347,
+      "cash_change_eur": -6600539.419154347,
+      "score_fixed_anchors": 0.7617895028848578,
+      "year_tokens": [
+        3,
+        3,
+        3,
+        1,
+        0
+      ],
+      "actions": [
+        "Gamma3@Y1",
+        "Lactose3@Y2",
+        "PVLargeB@Y0",
+        "Pack1@Y3[+1t]"
+      ]
+    },
+    {
+      "scenario": "baseline",
+      "guard": "no_ebit_loss",
+      "co2_saved_t": 4049.0330443874996,
+      "ebit_change_eur": 553057.7079269022,
+      "cash_change_eur": 118057.70792690245,
+      "score_fixed_anchors": 0.6720209153862915,
+      "year_tokens": [
+        3,
+        3,
+        3,
+        0,
+        1
+      ],
+      "actions": [
+        "Gamma1@Y4",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack3@Y2[+3t]"
+      ]
+    },
+    {
+      "scenario": "solar80",
+      "guard": "unrestricted",
+      "co2_saved_t": 5221.1039609,
+      "ebit_change_eur": -6623959.740893478,
+      "cash_change_eur": -7058959.740893478,
+      "score_fixed_anchors": 0.6559810603659872,
+      "year_tokens": [
+        3,
+        3,
+        3,
+        1,
+        0
+      ],
+      "actions": [
+        "Gamma3@Y1",
+        "Lactose3@Y2",
+        "PVLargeB@Y0",
+        "Pack1@Y3[+1t]"
+      ]
+    },
+    {
+      "scenario": "solar80",
+      "guard": "no_ebit_loss",
+      "co2_saved_t": 3435.8330443874997,
+      "ebit_change_eur": 94637.3861877718,
+      "cash_change_eur": -340362.6138122282,
+      "score_fixed_anchors": 0.5662124728674209,
+      "year_tokens": [
+        3,
+        3,
+        3,
+        0,
+        1
+      ],
+      "actions": [
+        "Gamma1@Y4",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack3@Y2[+3t]"
+      ]
+    },
+    {
+      "scenario": "suppliers20",
+      "guard": "unrestricted",
+      "co2_saved_t": 5472.00413745,
+      "ebit_change_eur": -5690727.035729347,
+      "cash_change_eur": -6125727.035729347,
+      "score_fixed_anchors": 0.7194853140702138,
+      "year_tokens": [
+        3,
+        3,
+        3,
+        1,
+        0
+      ],
+      "actions": [
+        "Gamma3@Y2",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack1@Y3[+1t]"
+      ]
+    },
+    {
+      "scenario": "suppliers20",
+      "guard": "no_ebit_loss",
+      "co2_saved_t": 4049.0330443874996,
+      "ebit_change_eur": 305665.7079269022,
+      "cash_change_eur": -129334.29207309755,
+      "score_fixed_anchors": 0.6653153843265356,
+      "year_tokens": [
+        3,
+        3,
+        3,
+        0,
+        1
+      ],
+      "actions": [
+        "Gamma1@Y4",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack3@Y2[+3t]"
+      ]
+    },
+    {
+      "scenario": "freight20",
+      "guard": "unrestricted",
+      "co2_saved_t": 5834.3039609,
+      "ebit_change_eur": -6165539.419154347,
+      "cash_change_eur": -6600539.419154347,
+      "score_fixed_anchors": 0.7617895028848578,
+      "year_tokens": [
+        3,
+        3,
+        3,
+        1,
+        0
+      ],
+      "actions": [
+        "Gamma3@Y1",
+        "Lactose3@Y2",
+        "PVLargeB@Y0",
+        "Pack1@Y3[+1t]"
+      ]
+    },
+    {
+      "scenario": "freight20",
+      "guard": "no_ebit_loss",
+      "co2_saved_t": 4049.0330443874996,
+      "ebit_change_eur": 553057.7079269022,
+      "cash_change_eur": 118057.70792690245,
+      "score_fixed_anchors": 0.6720209153862915,
+      "year_tokens": [
+        3,
+        3,
+        3,
+        0,
+        1
+      ],
+      "actions": [
+        "Gamma1@Y4",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack3@Y2[+3t]"
+      ]
+    },
+    {
+      "scenario": "combined",
+      "guard": "unrestricted",
+      "co2_saved_t": 4858.80413745,
+      "ebit_change_eur": -6149147.357468477,
+      "cash_change_eur": -6584147.357468477,
+      "score_fixed_anchors": 0.6136768715513432,
+      "year_tokens": [
+        3,
+        3,
+        3,
+        1,
+        0
+      ],
+      "actions": [
+        "Gamma3@Y2",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack1@Y3[+1t]"
+      ]
+    },
+    {
+      "scenario": "combined",
+      "guard": "no_ebit_loss",
+      "co2_saved_t": 3274.6185378337727,
+      "ebit_change_eur": 524505.8248029436,
+      "cash_change_eur": 89505.82480294362,
+      "score_fixed_anchors": 0.5533129683969711,
+      "year_tokens": [
+        3,
+        3,
+        3,
+        1,
+        0
+      ],
+      "actions": [
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack3@Y2[+3t]",
+        "Verona::SouthHVO@Y3"
+      ]
+    }
+  ],
+  "weights": [
+    {
+      "carbon_weight": 0.4,
+      "guard": "unrestricted",
+      "co2_saved_t": 5472.00413745,
+      "ebit_change_eur": -4443687.035729347,
+      "score": 0.7351471309371586,
+      "actions": [
+        "Gamma3@Y2",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack1@Y3[+1t]"
+      ]
+    },
+    {
+      "carbon_weight": 0.4,
+      "guard": "no_ebit_loss",
+      "co2_saved_t": 4049.0330443874996,
+      "ebit_change_eur": 553057.7079269022,
+      "score": 0.72430938538729,
+      "actions": [
+        "Gamma1@Y4",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack3@Y2[+3t]"
+      ]
+    },
+    {
+      "carbon_weight": 0.45,
+      "guard": "unrestricted",
+      "co2_saved_t": 5472.00413745,
+      "ebit_change_eur": -4443687.035729347,
+      "score": 0.7442166587602305,
+      "actions": [
+        "Gamma3@Y2",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack1@Y3[+1t]"
+      ]
+    },
+    {
+      "carbon_weight": 0.45,
+      "guard": "no_ebit_loss",
+      "co2_saved_t": 4049.0330443874996,
+      "ebit_change_eur": 553057.7079269022,
+      "score": 0.6981651503867907,
+      "actions": [
+        "Gamma1@Y4",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack3@Y2[+3t]"
+      ]
+    },
+    {
+      "carbon_weight": 0.5,
+      "guard": "unrestricted",
+      "co2_saved_t": 5834.3039609,
+      "ebit_change_eur": -6165539.419154347,
+      "score": 0.7617895028848578,
+      "actions": [
+        "Gamma3@Y1",
+        "Lactose3@Y2",
+        "PVLargeB@Y0",
+        "Pack1@Y3[+1t]"
+      ]
+    },
+    {
+      "carbon_weight": 0.5,
+      "guard": "no_ebit_loss",
+      "co2_saved_t": 4049.0330443874996,
+      "ebit_change_eur": 553057.7079269022,
+      "score": 0.6720209153862915,
+      "actions": [
+        "Gamma1@Y4",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack3@Y2[+3t]"
+      ]
+    },
+    {
+      "carbon_weight": 0.55,
+      "guard": "unrestricted",
+      "co2_saved_t": 5834.3039609,
+      "ebit_change_eur": -6165539.419154347,
+      "score": 0.781043483600997,
+      "actions": [
+        "Gamma3@Y1",
+        "Lactose3@Y2",
+        "PVLargeB@Y0",
+        "Pack1@Y3[+1t]"
+      ]
+    },
+    {
+      "carbon_weight": 0.55,
+      "guard": "no_ebit_loss",
+      "co2_saved_t": 4049.0330443874996,
+      "ebit_change_eur": 553057.7079269022,
+      "score": 0.6458766803857923,
+      "actions": [
+        "Gamma1@Y4",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack3@Y2[+3t]"
+      ]
+    },
+    {
+      "carbon_weight": 0.6,
+      "guard": "unrestricted",
+      "co2_saved_t": 5834.3039609,
+      "ebit_change_eur": -6165539.419154347,
+      "score": 0.8002974643171359,
+      "actions": [
+        "Gamma3@Y1",
+        "Lactose3@Y2",
+        "PVLargeB@Y0",
+        "Pack1@Y3[+1t]"
+      ]
+    },
+    {
+      "carbon_weight": 0.6,
+      "guard": "no_ebit_loss",
+      "co2_saved_t": 4049.0330443874996,
+      "ebit_change_eur": 553057.7079269022,
+      "score": 0.6197324453852932,
+      "actions": [
+        "Gamma1@Y4",
+        "Lactose3@Y1",
+        "PVLargeB@Y0",
+        "Pack3@Y2[+3t]"
+      ]
+    }
+  ],
+  "caveats": [
+    "No authoritative OTIF response",
+    "Inventory policy excluded",
+    "Subject to workbook solar, supplier, freight estimates",
+    "Unknown professor grade normalization",
+    "Packaging upgrade token increments are modeling assumption"
+  ],
+  "status": "Independent MILP checks passed; three 50/50 solutions exactly matched published v5 outputs (portable frozen-source cross-check)"
+}

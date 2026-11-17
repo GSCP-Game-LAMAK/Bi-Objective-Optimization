@@ -2,6 +2,13 @@
 
 **Five-year CO₂–EBIT decision support for the Eco Chain Reaction project.** The complete project is a static website deployable on GitHub Pages. All numerical data come from `Eco_Chain_Reaction_Model_Updated.xlsx` and the team's 25 shortlisted proposals; the professor's case rules govern feasibility.
 
+
+## Independent validation — frozen baseline (17 November 2026)
+
+**PASS within the defined 30-option workbook-backed model.** An independently written 130-binary-variable MILP formulation has reproduced the objective endpoints and all three primary 50/50 strategies; all 516 coefficients were reconciled to the revised workbook. A second test discovered that the **Year-4 EBIT ≥ 0** constraint selects the teammate's four-action plan, whereas **five-year cumulative EBIT ≥ 0** selects a different plan with negative Year-4 EBIT. These are distinct rules and neither is known to be professor-mandated.
+
+See **[`VALIDATION_REPORT.md`](VALIDATION_REPORT.md)** for the independently verified results, stress-test sensitivity, limitations, and reproducible source trace. The deployment now fails if the independent MILP cross-check detects a discrepancy.
+
 ## Start here — VS Code on Windows
 
 1. Extract the **contents** of `LAMAK_v5_Exact_Optimizer_GitHub_Actions.zip` into the **root** of your cloned `Bi-Objective-Optimization` repository. Replace the older `index.html`, `app.js`, `styles.css`, `data/` and `tests/` files. Include the normally hidden `.github/workflows/` folder.

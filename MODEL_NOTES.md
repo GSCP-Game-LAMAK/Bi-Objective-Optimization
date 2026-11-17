@@ -59,3 +59,8 @@ The normalized weighted preference is **not confirmed as the professor's scoring
 ### Study limitations
 
 The case supplies no official relationship mapping individual stock policy changes to OTIF. The routing calculations use modeled representatives and calibrated masses. The workbook's revised solar assumption uses mean-day electricity matching, not an hourly photovoltaic self-consumption dispatch. It is therefore improper to claim exact physical/operational carbon or service results, even when the combinatorial MILP solve is mathematically exact. Keep **solver optimality** separate from **input-model validity**.
+
+
+## Independent validation finding — EBIT time horizon
+
+The frozen source reconciliation and second MILP formulation passed. Crucially, a **five-year cumulative EBIT ≥ €0** guardrail does not guarantee *Year-4* EBIT ≥ €0. The v5 cumulative no-loss optimum has **+€553,058 cumulative EBIT** but **−€390,824 EBIT in Year 4**. An independently solved **Year-4 EBIT ≥ €0** guardrail (keeping the cumulative 50/50 objective) yields the teammate portfolio, **3,887.82 t CO₂ saved**, **+€1,116,960 cumulative EBIT**, **+€198,563 Year-4 EBIT**. See `VALIDATION_REPORT.md` and `validation/independent_validation.json`. Neither guardrail is an official case rule.

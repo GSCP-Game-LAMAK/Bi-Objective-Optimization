@@ -1,0 +1,23 @@
+{
+  "source_sha256": "67823502543875c14dde51e1b759b6602a9a0fbf92102714e0854ac0dccb7b1c",
+  "excluded_sheets": [
+    "Dashboard",
+    "Schedule",
+    "Audit",
+    "Sensitivity"
+  ],
+  "formula_counts": {
+    "Inputs": 0,
+    "Assumptions": 5,
+    "Routing": 0,
+    "Suppliers": 204,
+    "DC Locations": 104,
+    "Energy": 240,
+    "Transport": 963,
+    "Stock Policies": 4560,
+    "Actions": 1983
+  },
+  "total_formulas": 8059,
+  "formulas_referring_to_excluded_sheets": 0,
+  "method": "Reopened original updated XLSX with artifact_tool and inspected all formulas across nine included sheets"
+}
